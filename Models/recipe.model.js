@@ -10,6 +10,7 @@ const recipeSchema = mongoose.Schema({
   course: { type: String, required: true },
   review: { type: String },
   category: { type: String },
+  timeRequired: { type: String },
 });
 
 // {
@@ -22,7 +23,8 @@ const recipeSchema = mongoose.Schema({
 //     steps: "Vegetables: Sauté the shallots, scallions, and bell pepper in olive oil over medium-low heat for about five minutes. Add in the broccoli and cook for a minute. | Egg Mixture: Combine the egg whites, cottage cheese, garlic powder, and seasoning salt, and then mix in the vegetables. | Line a muffin tin with a half slice of turkey bacon around the edges, pour in the eggs, and top the cups with shredded cheese.",
 //     variations: "Vegetarian: Omit the sausage | Dairy Free: Omit the parmesan cheese | Egg Free: Omit the egg, there’s still plenty of protein.",
 //     course: "Breakfast",
-//     review: "5k"
+//     review: "5k",
+//     timeRequired: 1 hr 30 mins,
 // },
 
 const RecipeModel = mongoose.model("recipe", recipeSchema);
