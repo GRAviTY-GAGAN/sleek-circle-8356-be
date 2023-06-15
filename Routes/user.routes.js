@@ -96,9 +96,11 @@ userRouter.post("/verify", (req, res) => {
     if (token) {
       jwt.verify(token, process.env.secrete, (err, decoded) => {
         if (decoded) {
-          res.json({ decoded });
+          res.json({ decoded, cookie: req.cookies });
         }
       });
+    } else {
+      res.json({ msg: "Please login again!!" });
     }
   } catch (error) {
     res.status(400).json({ error });
