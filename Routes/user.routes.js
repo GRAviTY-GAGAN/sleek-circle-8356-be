@@ -101,7 +101,6 @@ userRouter.post("/verify", (req, res) => {
       });
     } else {
       res.json({ msg: "Please login again!!" });
-
     }
   } catch (error) {
     res.status(400).json({ error });
@@ -109,3 +108,4 @@ userRouter.post("/verify", (req, res) => {
 });
 
 module.exports = { userRouter };
+//
