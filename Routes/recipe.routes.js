@@ -19,4 +19,33 @@ recipeRoute.post("/add", adminAuth, async (req, res) => {
   }
 });
 
+recipeRoute.get("/", async (req, res) => {
+  let { page, category, course } = req.query;
+  if (page) {
+    page = Number(page) - 1;
+  }
+  if (!page || page < 0) {
+    page = 0;
+  }
+
+  const filterQuery = {};
+  if (category) {
+    filterQuery.category = { $in: category };
+  }
+
+  if (course) {
+    filterQuery.course = { $in: course };
+  }
+
+  try {
+    const recipes = await RecipeModel.find(filterQuery)
+      .limit(12)
+      .skip(12 * page);
+    const recipesCount = await RecipeModel.find(filterQuery).countDocuments();
+    res.json({ recipes, recipesCount });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+
 module.exports = { recipeRoute };
