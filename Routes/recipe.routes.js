@@ -48,4 +48,15 @@ recipeRoute.get("/", async (req, res) => {
   }
 });
 
+recipeRoute.get("/signleRecipe/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const recipe = await RecipeModel.findOne({ _id: id });
+
+    res.json({ recipe });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+});
+
 module.exports = { recipeRoute };
