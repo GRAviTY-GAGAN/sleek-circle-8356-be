@@ -20,7 +20,8 @@ recipeRoute.post("/add", adminAuth, async (req, res) => {
 });
 
 recipeRoute.get("/", async (req, res) => {
-  let { page, category, course } = req.query;
+  let { page, category, course, title } = req.query;
+  console.log(req.query);
   if (page) {
     page = Number(page) - 1;
   }
@@ -37,12 +38,44 @@ recipeRoute.get("/", async (req, res) => {
     filterQuery.course = { $in: course };
   }
 
+  if (title) {
+    filterQuery.name = { $regex: title, $options: "i" };
+  }
+
   try {
     const recipes = await RecipeModel.find(filterQuery)
       .limit(12)
       .skip(12 * page);
     const recipesCount = await RecipeModel.find(filterQuery).countDocuments();
-    res.json({ recipes, recipesCount });
+
+    const breakfastCount = await RecipeModel.find({
+      course: "Breakfast",
+    }).countDocuments();
+
+    const lunchCount = await RecipeModel.find({
+      course: "Lunch",
+    }).countDocuments();
+
+    const dinnerCount = await RecipeModel.find({
+      course: "Dinner",
+    }).countDocuments();
+
+    const startersCount = await RecipeModel.find({
+      course: "Starters",
+    }).countDocuments();
+
+    const drinksCount = await RecipeModel.find({
+      course: "Drinks",
+    }).countDocuments();
+    res.json({
+      recipes,
+      recipesCount,
+      breakfastCount,
+      lunchCount,
+      dinnerCount,
+      startersCount,
+      drinksCount,
+    });
   } catch (error) {
     res.status(400).json({ error });
   }
