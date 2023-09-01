@@ -13,16 +13,26 @@ userRouter.post("/signup", async (req, res) => {
     const findUser = await UserModel.findOne({ email });
 
     if (findUser) {
-      res.json({ msg: "User already exists. Please login!!" });
+      res.statusMessage = "User exists!!";
+      res.json({
+        msg: "User already exists. Please login!!",
+        status: "warning",
+      });
       return;
     } else {
       bcrypt.hash(password, 5, async (err, hash) => {
         if (hash) {
           const user = new UserModel({ ...req.body, password: hash });
           await user.save();
-          res.json({ msg: "User registered.", user });
+          res.statusMessage = "Account created.";
+          res.json({
+            msg: "We've created your account for you.",
+            status: "success",
+            user,
+          });
         } else {
-          res.json({ err: err.message });
+          res.statusMessage = "Something went wrong!";
+          res.json({ msg: err.message, status: "warning" });
         }
       });
     }
@@ -40,21 +50,28 @@ userRouter.post("/login", async (req, res) => {
       bcrypt.compare(password, findUser.password, (err, result) => {
         if (result) {
           const token = jwt.sign(
-            { userID: findUser._id, userName: findUser.name },
+            { userID: findUser._id, userName: findUser.name, role: "user" },
             process.env.secrete
           );
 
           if (token) {
-            res.json({ msg: "User Logged in." }, token);
+            res.statusMessage = "Success.";
+            res.json({ msg: "User Logged in.", token, status: "success" });
           } else {
-            res.json({ msg: "Something went wrong. Please try again." });
+            res.statusMessage = "Failed to login.";
+            res.json({
+              msg: "Something went wrong. Please try again.",
+              status: "warning",
+            });
           }
         } else {
-          res.json({ msg: "Invalid Credentials." });
+          res.statusMessage = "Failed to login.";
+          res.json({ msg: "Invalid Credentials.", status: "error" });
         }
       });
     } else {
-      res.json({ msg: "User doesnt exist. Sign in first to continue." });
+      res.statusMessage = "User doesnt exist. ";
+      res.json({ msg: "Sign in first to continue.", status: "warning" });
     }
   } catch (error) {
     res.status(400).json({ error });
@@ -71,7 +88,7 @@ userRouter.post("/admin", async (req, res) => {
       );
 
       if (token) {
-        res.cookie("jwt", token);
+        res.cookie("jwt", token, { httpOnly: true, secure: false });
         res.cookie("role", "Admin"); //tried to achieve with cookies but was not able to access cookie data had to depend on token and local storage
         res.statusMessage = "Success";
         res.json({
@@ -96,9 +113,11 @@ userRouter.post("/verify", (req, res) => {
     if (token) {
       jwt.verify(token, process.env.secrete, (err, decoded) => {
         if (decoded) {
-          res.json({ decoded });
+          res.json({ decoded, cookie: req.cookies });
         }
       });
+    } else {
+      res.json({ msg: "Please login again!!" });
     }
   } catch (error) {
     res.status(400).json({ error });
@@ -106,3 +125,4 @@ userRouter.post("/verify", (req, res) => {
 });
 
 module.exports = { userRouter };
+//

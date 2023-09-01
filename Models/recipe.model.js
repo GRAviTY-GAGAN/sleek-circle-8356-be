@@ -1,17 +1,20 @@
 const mongoose = require("mongoose");
 
-const recipeSchema = mongoose.Schema({
-  image: { type: String, required: true },
-  name: { type: String, required: true },
-  description: { type: String, required: true },
-  ingredients: { type: String },
-  directions: { type: String },
-  variations: { type: String },
-  course: { type: String, required: true },
-  review: { type: String },
-  category: { type: String },
-  timeRequired: { type: String },
-});
+const recipeSchema = mongoose.Schema(
+  {
+    image: { type: String, required: true },
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    ingredients: { type: String },
+    directions: { type: String },
+    variations: { type: String },
+    course: { type: String, required: true },
+    review: { type: String },
+    category: { type: String, required: true },
+    timeRequired: { type: String },
+  },
+  { versionKey: false }
+);
 
 // {
 //     id: 8,
