@@ -239,4 +239,62 @@ recipeRoute.get("/removeSaved/:id", userAuth, async (req, res) => {
   }
 });
 
+
+recipeRoute.post('/post', userAuth, async (req, res) => {
+  try {
+      const newPost = await RecipeModel.create(req.body);
+      res.status(201).json(newPost);
+  } catch (error) {
+      res.status(500).json({ error: 'Error creating post' });
+  }
+});
+
+
+// like a recipe
+recipeRoute.patch("/like/:recipeID", userAuth, async (req, res) => {
+  const recipeID = req.params.recipeID;
+  try {
+    const recipe = await RecipeModel.findById({ _id: recipeID });
+    const index = recipe.likes.findIndex((id) => {
+      return id === String(req.body.userID);
+    });
+    // console.log("index",index)
+
+    if (index == -1) {
+      recipe.likes.push(req.body.userID);
+    } else {
+      recipe.likes = recipe.likes.filter((id) => id !== String(req.body.userID));
+    }
+    const updatedRecipe = await RecipeModel.findByIdAndUpdate(
+      { _id: recipeID },
+      recipe,
+      {
+        new: true,
+      }
+    );
+    return res.status(200).json({ updatedRecipe });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// comment on recipe
+recipeRoute.patch("/comments/:recipeID", userAuth, async (req, res) => {
+  const recipeID = req.params.recipeID;
+  try {
+    const recipe = await RecipeModel.findById(recipeID);
+    recipe.comments.push({
+      userName: req.body.userName,
+      comment: req.body.comment,
+    });
+    await RecipeModel.findByIdAndUpdate({ _id: recipeID }, recipe, {
+      new: true,
+    });
+    return res.status(200).json({ recipe });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
 module.exports = { recipeRoute };
