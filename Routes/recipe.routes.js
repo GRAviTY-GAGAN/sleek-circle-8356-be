@@ -48,6 +48,16 @@ recipeRoute.get("/", async (req, res) => {
     const recipes = await RecipeModel.find(filterQuery)
       .limit(12)
       .skip(12 * page);
+
+      if(recipes?.length>0){
+        recipes?.map((ele)=>{
+          return {
+            ...ele,
+            likes : ele?.likes?.length,
+          }
+        });
+      }
+
     const recipesCount = await RecipeModel.find(filterQuery).countDocuments();
 
     const breakfastCount = await RecipeModel.find({
@@ -79,7 +89,7 @@ recipeRoute.get("/", async (req, res) => {
       drinksCount,
     });
   } catch (error) {
-    res.status(400).json({ error });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -272,6 +282,7 @@ recipeRoute.patch("/like/:recipeID", userAuth, async (req, res) => {
         new: true,
       }
     );
+    let like = updatedRecipe.likes.length;
     return res.status(200).json({ updatedRecipe });
   } catch (error) {
     return res.status(500).json({ error: error.message });

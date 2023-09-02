@@ -21,7 +21,7 @@ const recipeSchema = mongoose.Schema(
     likes: { type: Array },
     comments: { type: Array },
     userID: { type: String },
-    userName: { type: String }
+    userName: { type: String },
     // likes: [{type : ObjectId, ref: "user"}],
     // comment: [String]
   },
