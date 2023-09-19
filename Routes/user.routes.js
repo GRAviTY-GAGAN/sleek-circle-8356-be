@@ -56,7 +56,7 @@ userRouter.post("/login", async (req, res) => {
 
           if (token) {
             res.statusMessage = "Success.";
-            res.json({ msg: "User Logged in.", token, status: "success" });
+            res.json({ msg: "User Logged in.", token,nameOfUser: findUser.name, status: "success" });
           } else {
             res.statusMessage = "Failed to login.";
             res.json({
